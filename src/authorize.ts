@@ -91,12 +91,12 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
   }
 
   if (frame.data[2] == 0xfe || frame.data[2] == 0x02) {
-    host.log("[SECURITY] Access granted");
+    host.log('[SECURITY] Access granted');
     return true;
   }
 
   if (frame.data[2] == 0xfd || frame.data[2] == 0xfb || frame.data[2] == 0x01) {
-    host.log("[SECURITY] Got seed value from ECU");
+    host.log('[SECURITY] Got seed value from ECU');
 
     // wait msToWait, whilst sending a keepalive every second
     while (msToWait > 1000) {
@@ -161,7 +161,7 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
         finalFrame.data[2] == 0xfc ||
         finalFrame.data[2] == 0x02)
     ) {
-      host.log("[SECURITY] Access granted");
+      host.log('[SECURITY] Access granted');
       return true;
     }
 
@@ -184,13 +184,13 @@ async function setup() {
 
   // Initialize Session
   can.sendFrame(0, 0x11, 2, [0x3e, 0x01]); // i hope?
-  host.log("Attempting to gain authorization.");
+  host.log('Attempting to gain authorization.');
   let success = await requestSecurityAccess(0);
   host.log(`Gained authorization: ${success}`);
 }
 
 function tick() {
-  host.log("Test Tick");
+  host.log('Test Tick');
 }
 
 function gotCANFrame(bus: number, id: number, len: number, data: number[]) {
