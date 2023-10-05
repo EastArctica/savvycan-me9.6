@@ -39,27 +39,31 @@ function calculateKeyForME96(a_seed: number[]): number[] {
   let seed: number = (a_seed[0] << 8) | a_seed[1];
   let key: number = 0;
   let returnKey: number[] = new Array(2).fill(0);
-  
+
   key = RetSeed(seed);
 
-  returnKey[0] = (key >> 8) & 0xFF;
-  returnKey[1] = key & 0xFF;
+  returnKey[0] = (key >> 8) & 0xff;
+  returnKey[1] = key & 0xff;
   return returnKey;
 }
 
 // TypeScript version of `RetSeed`
 function RetSeed(Seed: number): number {
   // Not correct but it works with a patch
-  let Component2: number = (0xEB + Seed) & 0xFF;
+  let Component2: number = (0xeb + Seed) & 0xff;
 
   // Catch Anomalies
-  if (Seed >= 0x3808 && Seed < 0xA408) {
+  if (Seed >= 0x3808 && Seed < 0xa408) {
     Component2 -= 1;
   }
 
-  return ((Component2 << 9) | ((((0x5BF8 + Seed) >> 8) & 0xFF) << 1) | ((Component2 >> 7) & 1)) & 0xFFFF;
+  return (
+    ((Component2 << 9) |
+      ((((0x5bf8 + Seed) >> 8) & 0xff) << 1) |
+      ((Component2 >> 7) & 1)) &
+    0xffff
+  );
 }
-
 
 async function requestSecurityAccess(msToWait: number): Promise<boolean> {
   let cmd: number[];
@@ -80,17 +84,19 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
 
   if (frame.data[1] !== 0x67) {
     // TODO: Translate error value into an error string
-    host.log(`[SECURITY] Failed to gain access: 0x${frame.data[3].toString(16)}`);
+    host.log(
+      `[SECURITY] Failed to gain access: 0x${frame.data[3].toString(16)}`
+    );
     return false;
   }
 
   if (frame.data[2] == 0xfe || frame.data[2] == 0x02) {
-    host.log('[SECURITY] Access granted');
+    host.log("[SECURITY] Access granted");
     return true;
   }
 
   if (frame.data[2] == 0xfd || frame.data[2] == 0xfb || frame.data[2] == 0x01) {
-    host.log('[SECURITY] Got seed value from ECU');
+    host.log("[SECURITY] Got seed value from ECU");
 
     // wait msToWait, whilst sending a keepalive every second
     while (msToWait > 1000) {
@@ -130,7 +136,7 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
         keyData = BigInt(0xfe2704);
         break;
     }
-    
+
     let key1 = key[1];
     key1 *= 0x100000000;
     keyData ^= BigInt(key1);
@@ -139,24 +145,31 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
     keyData ^= BigInt(key2);
 
     let keyDataArr = [
-      Number(keyData >> BigInt(0x00) & BigInt(0xFF)),
-      Number(keyData >> BigInt(0x08) & BigInt(0xFF)),
-      Number(keyData >> BigInt(0x10) & BigInt(0xFF)),
-      Number(keyData >> BigInt(0x18) & BigInt(0xFF)),
-      Number(keyData >> BigInt(0x20) & BigInt(0xFF))
+      Number((keyData >> BigInt(0x00)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x08)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x10)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x18)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x20)) & BigInt(0xff)),
     ];
 
-    let finalFrame: Promise<CANFrame> | CANFrame = waitForFrame(0x7E8);
-    can.sendFrame(0, 0x7E0, 5, keyDataArr);
+    let finalFrame: Promise<CANFrame> | CANFrame = waitForFrame(0x7e8);
+    can.sendFrame(0, 0x7e0, 5, keyDataArr);
     finalFrame = await finalFrame;
-    if (finalFrame.data[1] == 0x67 && (finalFrame.data[2] == 0xFE || finalFrame.data[2] == 0xFC || finalFrame.data[2] == 0x02)) {
-      host.log('[SECURITY] Access granted');
+    if (
+      finalFrame.data[1] == 0x67 &&
+      (finalFrame.data[2] == 0xfe ||
+        finalFrame.data[2] == 0xfc ||
+        finalFrame.data[2] == 0x02)
+    ) {
+      host.log("[SECURITY] Access granted");
       return true;
     }
 
-    if (finalFrame.data[1] == 0x7F && finalFrame.data[2] == 0x27) {
-    // TODO: Translate error value into an error string
-      host.log(`[SECURITY] Failed to gain access: 0x${frame.data[3].toString(16)}`);
+    if (finalFrame.data[1] == 0x7f && finalFrame.data[2] == 0x27) {
+      // TODO: Translate error value into an error string
+      host.log(
+        `[SECURITY] Failed to gain access: 0x${frame.data[3].toString(16)}`
+      );
       return false;
     }
 
@@ -171,14 +184,13 @@ async function setup() {
 
   // Initialize Session
   can.sendFrame(0, 0x11, 2, [0x3e, 0x01]); // i hope?
-  host.log('Attempting to gain authorization.');
+  host.log("Attempting to gain authorization.");
   let success = await requestSecurityAccess(0);
   host.log(`Gained authorization: ${success}`);
-
 }
 
 function tick() {
-  host.log('Test Tick');
+  host.log("Test Tick");
 }
 
 function gotCANFrame(bus: number, id: number, len: number, data: number[]) {
