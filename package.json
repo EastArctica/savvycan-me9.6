@@ -1,0 +1,16 @@
+{
+  "name": "savvycan-me9.6",
+  "version": "1.0.0",
+  "description": "Utility scripts for managing Bosch ME9.6 ECUs inside of SavvyCAN. Based off the [mattiasclaesson/Trionic] project",
+  "main": "dist/authorize.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "East_Arctica",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^20.8.2",
+    "typescript": "^5.2.2"
+  }
+}
