@@ -1,3 +1,5 @@
+import 'core-js';
+
 enum AccessLevel {
   AccessLevel01 = 1,
   AccessLevelFB = 2,
@@ -69,13 +71,13 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
   let cmd: number[];
   switch (securityLevel) {
     case AccessLevel.AccessLevel01:
-      cmd = [0x01, 0x27, 0x02];
+      cmd = [0x02, 0x27, 0x01];
       break;
     case AccessLevel.AccessLevelFB:
-      cmd = [0xfb, 0x27, 0x02];
+      cmd = [0x02, 0x27, 0xfb];
       break;
     case AccessLevel.AccessLevelFD:
-      cmd = [0xfd, 0x27, 0x02];
+      cmd = [0x02, 0x27, 0xfd];
       break;
   }
   let frame: Promise<CANFrame> | CANFrame = waitForFrame(0x7e8);
@@ -145,11 +147,11 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
     keyData ^= BigInt(key2);
 
     let keyDataArr = [
-      Number((keyData >> BigInt(0x00)) & BigInt(0xff)),
-      Number((keyData >> BigInt(0x08)) & BigInt(0xff)),
-      Number((keyData >> BigInt(0x10)) & BigInt(0xff)),
-      Number((keyData >> BigInt(0x18)) & BigInt(0xff)),
       Number((keyData >> BigInt(0x20)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x18)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x10)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x08)) & BigInt(0xff)),
+      Number((keyData >> BigInt(0x00)) & BigInt(0xff)),
     ];
 
     let finalFrame: Promise<CANFrame> | CANFrame = waitForFrame(0x7e8);
@@ -180,17 +182,13 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
 }
 
 async function setup() {
-  host.setTickInterval(5000);
+  can.setFilter(0, 0, 0);
 
   // Initialize Session
-  can.sendFrame(0, 0x11, 2, [0x3e, 0x01]); // i hope?
+  can.sendFrame(0, 0x11, 2, [0x01, 0x3e]); // i hope?
   host.log('Attempting to gain authorization.');
   let success = await requestSecurityAccess(0);
   host.log(`Gained authorization: ${success}`);
-}
-
-function tick() {
-  host.log('Test Tick');
 }
 
 function gotCANFrame(bus: number, id: number, len: number, data: number[]) {
