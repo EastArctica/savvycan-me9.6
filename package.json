@@ -6,14 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "check": "tsc --noEmit",
-    "babel": "babel src --out-dir dist --extensions .ts --source-maps inline",
     "webpack": "webpack --mode production",
     "build": "pnpm run check && pnpm run webpack"
   },
   "author": "East_Arctica",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^20.8.2"
+    "@types/node": "^20.8.2",
+    "esbuild-plugin-babel": "^0.2.3",
+    "rollup-plugin-babel": "^4.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.0",
@@ -22,6 +23,11 @@
     "@babel/preset-typescript": "^7.23.0",
     "babel-loader": "^9.1.3",
     "core-js": "^3.33.0",
+    "esbuild": "0.19.4",
+    "prettier": "^3.0.3",
+    "rollup": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"

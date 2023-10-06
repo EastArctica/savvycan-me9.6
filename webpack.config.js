@@ -1,21 +1,29 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/authorize.ts',  // Your entry file
+  entry: {
+    //authorization: './src/authorize/index.ts',
+    test: './src/test/index.ts'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'  // Your final single output file
+    filename: '[name].js',
+    libraryTarget: 'this'
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       }
-    ]
+    ],
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+  },
+  externals: {
+    can: 'can',
+    hos: 'host'
   }
 };

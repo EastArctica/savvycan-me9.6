@@ -182,6 +182,7 @@ async function requestSecurityAccess(msToWait: number): Promise<boolean> {
 }
 
 async function setup() {
+  console.log("Testing123")
   can.setFilter(0, 0, 0);
 
   // Initialize Session
